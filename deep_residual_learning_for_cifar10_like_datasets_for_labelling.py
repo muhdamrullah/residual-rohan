@@ -321,9 +321,9 @@ def main(n=5, num_epochs=82, model=None):
   ################################### PREDICTIONS FOR UNLABELLED #######################################
     predictions = np.array([],dtype = int)
     # Make predictions
-    for batch in iterate_minibatches(X_unlabelled, Y_unlabelled, batch_size, shuffle=False):
+    for batch in iterate_minibatches(X_unlabelled, Y_unlabelled, 500, shuffle=False):
       inputs, targets = batch
-      batch_predictions = np.array(get_prediction(inputs)).reshape(batch_size,2)
+      batch_predictions = np.array(get_prediction(inputs)).reshape(500,2)
       batch_predictions = batch_predictions[:,1]>batch_predictions[:,0]
       batch_predictions = np.array(batch_predictions, dtype= int)
       predictions = np.append(predictions, batch_predictions)
