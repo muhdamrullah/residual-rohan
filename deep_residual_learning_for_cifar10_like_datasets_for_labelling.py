@@ -327,7 +327,7 @@ def main(n=5, num_epochs=82, model=None):
     # Make predictions
     for batch in iterate_minibatches(X_unlabelled, Y_unlabelled, 500, shuffle=False):
       inputs, targets = batch
-      batch_predictions = np.array(get_prediction(inputs)).reshape(500,2)
+      batch_predictions = np.array(get_prediction(inputs))
       batch_predictions = batch_predictions[:,1]>batch_predictions[:,0]
       batch_predictions = np.array(batch_predictions, dtype= int)
       predictions = np.append(predictions, batch_predictions)
@@ -335,6 +335,8 @@ def main(n=5, num_epochs=82, model=None):
     
     unlabeled_path = os.path.abspath('./evaluation_files/eval_col_35x35/')
     submission_ids = get_ids(unlabeled_path)
+    
+    submission_array = (np.append(submission_ids, predictions,axis = 1))
     np.savetxt("submission.csv", submission_array,  fmt='%d', delimiter=',', newline='\n', header='Id,label', comments = '')
     print("Submission file saved")
     
