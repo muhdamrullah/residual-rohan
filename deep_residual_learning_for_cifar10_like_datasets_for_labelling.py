@@ -249,6 +249,9 @@ def main(n=5, num_epochs=82, model=None):
 
     # Compile a second function computing the validation loss and accuracy:
     val_fn = theano.function([input_var, target_var], [test_loss, test_acc])
+    
+    # Compile a function for predicting unclassified images
+    get_prediction = theano.function([input_var], [test_prediction])
 
     if model is None:
         # launch the training loop
