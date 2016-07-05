@@ -87,7 +87,8 @@ def load_data():
         Y_train=Y_train.astype('int32'),
         X_test = lasagne.utils.floatX(X_test),
         Y_test = Y_test.astype('int32'),
-        X_unlabelled = lasagne.utils.floatX(X_unlabelled),)
+        X_unlabelled = lasagne.utils.floatX(X_unlabelled),
+        Y_unlabelled = lasagne.utils.floatX(Y_unlabelled),)
 
 # ##################### Build the neural network model #######################
 
