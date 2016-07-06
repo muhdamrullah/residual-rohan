@@ -50,7 +50,7 @@ def load_data():
     x = x.reshape((x.shape[0], 32, 32, 3)).transpose(0,3,1,2)
 
     # subtract per-pixel mean
-    pixel_mean = np.mean(x[0:50000],axis=0)
+    pixel_mean = np.mean(x[0:60000],axis=0)
     #pickle.dump(pixel_mean, open("cifar10-pixel_mean.pkl","wb"))
     x -= pixel_mean
 
@@ -141,7 +141,7 @@ def build_cnn(input_var=None, n=5):
 
     # fully connected layer
     network = DenseLayer(
-            l, num_units=10,
+            l, num_units=4,
             W=lasagne.init.HeNormal(),
             nonlinearity=softmax)
 
