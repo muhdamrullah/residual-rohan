@@ -34,6 +34,5 @@ $ python deep_residual_learning_for_cifar10_like_datasets.py
 
 You can then generate a csv for kaggle. Please ensure that you have a CIFAR-like unlabelled data and name it 'unlabelled_batch'. This data can have a generic label of '0' or 'NA'.
 ```
-$ python deep_residual_learning_for_cifar10_like_datasets for labelling.py 5 <name of model in .npz format>
-
+$ python deep_residual_learning_for_cifar10_like_datasets.py for labelling.py 5 <name of model in .npz format>
 ```
