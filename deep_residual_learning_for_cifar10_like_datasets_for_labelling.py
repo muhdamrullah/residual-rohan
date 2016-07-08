@@ -46,7 +46,7 @@ def unpickle(file):
 def load_data():
     xs = []
     ys = []
-    for j in range(7):
+    for j in range(6):
       d = unpickle('./data_batch_'+`j+1`)
       x = d['data']
       y = d['label']
@@ -70,17 +70,17 @@ def load_data():
     x -= pixel_mean
 
     # create mirrored images
-    X_train = x[0:60000,:,:,:]
-    Y_train = y[0:60000]
+    X_train = x[0:50000,:,:,:]
+    Y_train = y[0:50000]
     X_train_flip = X_train[:,:,:,::-1]
     Y_train_flip = Y_train
     X_train = np.concatenate((X_train,X_train_flip),axis=0)
     Y_train = np.concatenate((Y_train,Y_train_flip),axis=0)
 
-    X_test = x[60000:75000,:,:,:]
-    Y_test = y[60000:75000]
-    X_unlabelled = x[75000:,:,:,:]
-    Y_unlabelled = y[75000:]
+    X_test = x[50000:60000,:,:,:]
+    Y_test = y[50000:60000]
+    X_unlabelled = x[60000:,:,:,:]
+    Y_unlabelled = y[60000:]
 
     return dict(
         X_train=lasagne.utils.floatX(X_train),
@@ -88,7 +88,7 @@ def load_data():
         X_test = lasagne.utils.floatX(X_test),
         Y_test = Y_test.astype('int32'),
         X_unlabelled = lasagne.utils.floatX(X_unlabelled),
-        Y_unlabelled = Y_unlabelled.astype('int32'),)
+	Y_unlabelled = Y_unlabelled.astype('int32'),)
 
 # ##################### Build the neural network model #######################
 
@@ -160,7 +160,7 @@ def build_cnn(input_var=None, n=5):
 
     # fully connected layer
     network = DenseLayer(
-            l, num_units=10,
+            l, num_units=4,
             W=lasagne.init.HeNormal(),
             nonlinearity=softmax)
 
@@ -249,8 +249,8 @@ def main(n=5, num_epochs=82, model=None):
 
     # Compile a second function computing the validation loss and accuracy:
     val_fn = theano.function([input_var, target_var], [test_loss, test_acc])
-    
-    # Compile a function for predicting unclassified images
+
+    # Compile a third function for predicting unclassified images:
     get_prediction = theano.function([input_var], [test_prediction])
 
     if model is None:
@@ -259,7 +259,7 @@ def main(n=5, num_epochs=82, model=None):
         # We iterate over epochs:
         for epoch in range(num_epochs):
             # shuffle training data
-            train_indices = np.arange(60000)
+            train_indices = np.arange(50000)
             np.random.shuffle(train_indices)
             X_train = X_train[train_indices,:,:,:]
             Y_train = Y_train[train_indices]
@@ -325,22 +325,29 @@ def main(n=5, num_epochs=82, model=None):
   ################################### PREDICTIONS FOR UNLABELLED #######################################
     predictions = np.array([],dtype = int)
     # Make predictions
-    for batch in iterate_minibatches(X_unlabelled, Y_unlabelled, 500, shuffle=False):
+    print ("Making Predictions...")
+    for batch in iterate_minibatches(X_unlabelled, Y_unlabelled, 1, shuffle=False):
       inputs, targets = batch
-      batch_predictions = np.array(get_prediction(inputs))
-      batch_predictions = batch_predictions[:,1]>batch_predictions[:,0]
+      print (batch)
+      batch_predictions = np.array(get_prediction(inputs)).reshape(1,4)
+      print (batch_predictions.shape)
+      batch_predictions = np.argmax(batch_predictions, axis=1)
+#      batch_predictions = batch_predictions[:,1]>batch_predictions[:,0]
+      print (batch_predictions)
       batch_predictions = np.array(batch_predictions, dtype= int)
       predictions = np.append(predictions, batch_predictions)
     predictions = np.array(predictions, dtype = int)[...,None]
-    
+    print (predictions.shape)
+    print (predictions)
+
     unlabeled_path = os.path.abspath('./evaluation_files/eval_col_35x35/')
     submission_ids = get_ids(unlabeled_path)
-    
+    print (submission_ids.shape)
+
     submission_array = (np.append(submission_ids, predictions,axis = 1))
     np.savetxt("submission.csv", submission_array,  fmt='%d', delimiter=',', newline='\n', header='Id,label', comments = '')
     print("Submission file saved")
     
-    submission_array = (np.append(submission_ids, predictions,axis = 1))
 
 
 if __name__ == '__main__':
